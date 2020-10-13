@@ -1,0 +1,24 @@
+---
+- name: Verificando servidores web
+  hosts: all
+  remote_user: root
+  gather_facts: no
+
+  tasks:
+  - name: Instalando / Atualizando para a versão mais recente do Apache
+    yum:
+      name: httpd
+      state: latest
+  - name: Iniciando Servidor Apache
+    service:
+      name: httpd
+      state: started
+  - name: Alterando as configurações do Servidor Web
+    template:
+      src: index.html
+      dest: /var/www/html
+
+  - name: Instalando / Atualizando para a versão mais recente do Postgres
+    yum:
+      name: postgresql-server
+      state: latest
