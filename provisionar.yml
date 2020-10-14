@@ -1,0 +1,72 @@
+---
+- name: Criar VM no Azure
+  hosts: localhost
+  gather_facts: no
+  tasks:       
+    - name: Criando Grupo
+      azure_rm_resourcegroup:
+        name: grupo-testes-ansible
+        location: eastus2
+
+    - name: Criando conta Storage
+      azure_rm_storageaccount:
+        resource_group: grupo-testes-ansible
+        name: contastorageansible
+        account_type: Standard_LRS
+
+    - name: Criando virtual network
+      azure_rm_virtualnetwork:
+        resource_group: grupo-testes-ansible
+        name: redevirtual
+        address_prefixes: "10.10.0.0/16"
+
+    - name: Configurando subnet
+      azure_rm_subnet:
+        resource_group: grupo-testes-ansible
+        name: subnetansible
+        address_prefix: "10.10.0.0/24"
+        virtual_network: redevirtual
+
+    - name: Criando IP Público
+      azure_rm_publicipaddress:
+        resource_group: grupo-testes-ansible
+        allocation_method: Static
+        name: ippublicoansible
+
+    - name: Configurando SSH
+      azure_rm_securitygroup:
+        resource_group: grupo-testes-ansible
+        name: gruposegurancaansible
+        rules:
+          - name: SSH
+            protocol: Tcp
+            destination_port_range: 22
+            access: Allow
+            priority: 101
+            direction: Inbound
+
+    - name: Criando NIC
+      azure_rm_networkinterface:
+        resource_group: grupo-testes-ansible
+        name: redevirtual
+        virtual_network: redevirtual
+        subnet: subnetansible
+        public_ip_name: ippublicoansible
+        security_group: gruposegurancaansible
+
+    - name: Criando Máquina Virtual
+      azure_rm_virtualmachine:
+        resource_group: grupo-testes-ansible
+        name: vmansible
+        vm_size: Standard_D2
+        storage_account: contastorageansible
+        storage_container: vmansible
+        storage_blob: vmansible.vhd
+        admin_username: ansibleuser
+        admin_password: Ansibleuser123
+        network_interfaces: redevirtual
+        image:
+          offer: CentOS
+          publisher: OpenLogic
+          sku: '7.1'
+          version: latest
