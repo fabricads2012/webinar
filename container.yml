@@ -1,0 +1,19 @@
+- name: Criar container
+  hosts: localhost
+  gather_facts: no
+  tasks:
+    - name: Criando Grupo de Container
+      azure_rm_containerinstance:
+        resource_group: grupo-testes-ansible
+        name: grupocontainer-ansible
+        os_type: linux
+        ip_address: public
+        ports:
+          - 80
+          - 81
+        containers:
+          - name: containeransible
+            image: httpd
+            memory: 1.5
+            ports:
+              - 80
