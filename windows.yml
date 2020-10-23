@@ -1,0 +1,11 @@
+---
+- name: Instalando pacote no Windows
+  hosts: all
+  remote_user: root
+  gather_facts: no
+
+  tasks:
+  - name:  Instalando o 7-Zip via Chocolatey
+    win_chocolatey:
+      name: 7zip
+      state: present
