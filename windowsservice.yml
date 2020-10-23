@@ -1,0 +1,12 @@
+---
+- name: Verificando servidores web
+  hosts: all
+  remote_user: root
+  gather_facts: no
+
+  tasks:
+  - name: Definido serviço Spooler para modo Automático e iniciando o serviço
+    win_service:
+      name: spooler
+      start_mode: auto
+      state: started
